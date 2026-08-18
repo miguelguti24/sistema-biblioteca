@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca — Panel</title>
+<style>
+  :root {
+    --papel: #f7f2e7;
+    --papel-oscuro: #ece3d0;
+    --tinta: #26312b;
+    --tinta-suave: #5b6a60;
+    --verde: #2c4a3e;
+    --verde-claro: #3f6b58;
+    --oro: #b6862c;
+    --oro-claro: #e7c777;
+    --borde: #d8cdb2;
+    --rojo: #9c3b3b;
+  }
+
+  * { box-sizing: border-box; }
+
+  .oculto { display: none !important; }
+
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: Georgia, 'Times New Roman', serif;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    background: var(--verde);
+    color: var(--papel);
+    padding: 22px 32px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 4px solid var(--oro);
+  }
+
+  .topbar h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    font-weight: 400;
+  }
+
+  .topbar h1 .sello {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--oro);
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+  .topbar .estado-sesion {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.85rem;
+    color: var(--oro-claro);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .topbar button {
+    background: transparent;
+    border: 1px solid var(--oro-claro);
+    color: var(--oro-claro);
+    padding: 6px 14px;
+    border-radius: 3px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .topbar button:hover { background: rgba(255,255,255,0.08); }
+
+  .envoltura {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* --- Panel de acceso --- */
+  .acceso {
+    max-width: 420px;
+    margin: 60px auto;
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 4px;
+    padding: 36px 32px;
+    box-shadow: 0 2px 14px rgba(38,49,43,0.08);
+  }
+
+  .acceso h2 {
+    margin: 0 0 4px;
+    font-weight: 400;
+    font-size: 1.4rem;
+  }
+  .acceso .subtitulo {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--tinta-suave);
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+
+  .pestañas {
+    display: flex;
+    border-bottom: 1px solid var(--borde);
+    margin-bottom: 22px;
+  }
+  .pestañas button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    color: var(--tinta-suave);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .pestañas button.activa {
+    color: var(--verde);
+    border-bottom-color: var(--oro);
+    font-weight: 600;
+  }
+
+  .formulario { display: flex; flex-direction: column; gap: 14px; }
+  .formulario.oculto { display: none; }
+
+  label {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tinta-suave);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--borde);
+    border-radius: 3px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.95rem;
+    background: var(--papel);
+    color: var(--tinta);
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--verde);
+  }
+
+  .boton-principal {
+    background: var(--verde);
+    color: var(--papel);
+    border: none;
+    padding: 12px;
+    border-radius: 3px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .boton-principal:hover { background: var(--verde-claro); }
+
+  .boton-secundario {
+    background: transparent;
+    color: var(--verde);
+    border: 1px solid var(--verde);
+    padding: 8px 14px;
+    border-radius: 3px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .boton-secundario:hover { background: rgba(44,74,62,0.06); }
+
+  .mensaje {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.85rem;
+    padding: 10px 12px;
+    border-radius: 3px;
+    margin-top: 14px;
+  }
+  .mensaje.error { background: #f5e2e2; color: var(--rojo); }
+  .mensaje.ok { background: #e4efe8; color: var(--verde); }
+
+  /*App principal  */
+  .app.oculto { display: none; }
+
+  .seccion {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 4px;
+    padding: 28px 30px;
+    margin-bottom: 28px;
+  }
+
+  .seccion-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--papel-oscuro);
+    padding-bottom: 12px;
+  }
+  .seccion-encabezado h2 {
+    margin: 0;
+    font-weight: 400;
+    font-size: 1.2rem;
+  }
+  .seccion-encabezado .contador {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.75rem;
+    color: var(--tinta-suave);
+  }
+
+  .fila-form {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1.4fr 0.9fr auto;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 22px;
+  }
+  .fila-form .campo { display: flex; flex-direction: column; }
+  .fila-form .campo label { margin-bottom: 4px; }
+  .fila-form button { height: 40px; white-space: nowrap; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.9rem;
+  }
+  thead th {
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--tinta-suave);
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--borde);
+  }
+  tbody td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--papel-oscuro);
+  }
+  tbody tr:hover { background: var(--papel); }
+
+  .etiqueta {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+  }
+  .etiqueta.disponible { background: #e4efe8; color: var(--verde); }
+  .etiqueta.prestado { background: #f3e8d4; color: var(--oro); }
+  .etiqueta.activo { background: #f3e8d4; color: var(--oro); }
+  .etiqueta.devuelto { background: #e9e6de; color: var(--tinta-suave); }
+
+  .accion-link {
+    background: none;
+    border: none;
+    color: var(--verde);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+  .accion-link:disabled {
+    color: var(--tinta-suave);
+    cursor: default;
+    text-decoration: none;
+  }
+
+  .vacio {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--tinta-suave);
+    font-size: 0.85rem;
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .fila-form { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><span class="sello"></span>Biblioteca Personal</h1>
+  <div class="estado-sesion" id="estadoSesion"></div>
+</div>
+
+<div class="envoltura">
+
+  <!-- Panel de acceso -->
+  <div class="acceso" id="panelAcceso">
+    <h2>Acceso al sistema</h2>
+    <div class="subtitulo">Inicia sesión o crea una cuenta para gestionar el catálogo.</div>
+
+    <div class="pestañas">
+      <button id="tabLogin" class="activa" onclick="cambiarPestaña('login')">Iniciar sesión</button>
+      <button id="tabRegistro" onclick="cambiarPestaña('registro')">Crear cuenta</button>
+    </div>
+
+    <form class="formulario" id="formLogin" onsubmit="return manejarLogin(event)">
+      <div>
+        <label>Correo</label>
+        <input type="email" id="loginEmail" required placeholder="tucorreo@ejemplo.com">
+      </div>
+      <div>
+        <label>Contraseña</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••">
+      </div>
+      <button class="boton-principal" type="submit">Entrar</button>
+    </form>
+
+    <form class="formulario oculto" id="formRegistro" onsubmit="return manejarRegistro(event)">
+      <div>
+        <label>Nombre</label>
+        <input type="text" id="regNombre" required placeholder="Tu nombre completo">
+      </div>
+      <div>
+        <label>Correo</label>
+        <input type="email" id="regEmail" required placeholder="tucorreo@ejemplo.com">
+      </div>
+      <div>
+        <label>Contraseña (mínimo 6 caracteres)</label>
+        <input type="password" id="regPassword" required minlength="6" placeholder="••••••••">
+      </div>
+      <button class="boton-principal" type="submit">Crear cuenta</button>
+    </form>
+
+    <div id="mensajeAcceso"></div>
+  </div>
+
+  <!-- App principal -->
+  <div class="app oculto" id="app">
+
+    <div class="seccion">
+      <div class="seccion-encabezado">
+        <h2>Catálogo de libros</h2>
+        <span class="contador" id="contadorLibros"></span>
+      </div>
+
+      <form class="fila-form" onsubmit="return agregarLibro(event)">
+        <div class="campo">
+          <label>Título</label>
+          <input type="text" id="libroTitulo" required placeholder="Título del libro">
+        </div>
+        <div class="campo">
+          <label>Autor</label>
+          <input type="text" id="libroAutor" required placeholder="Autor">
+        </div>
+        <div class="campo">
+          <label>Género</label>
+          <input type="text" id="libroGenero" placeholder="Género">
+        </div>
+        <div class="campo">
+          <label>Año</label>
+          <input type="number" id="libroAnio" placeholder="Año">
+        </div>
+        <button class="boton-principal" type="submit">Agregar</button>
+      </form>
+
+      <div id="mensajeLibros"></div>
+      <table id="tablaLibros">
+        <thead>
+          <tr><th>Título</th><th>Autor</th><th>Género</th><th>Año</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody id="cuerpoLibros"></tbody>
+      </table>
+      <div class="vacio oculto" id="vacioLibros">Todavía no hay libros en el catálogo.</div>
+    </div>
+
+    <div class="seccion">
+      <div class="seccion-encabezado">
+        <h2>Préstamos</h2>
+        <span class="contador" id="contadorPrestamos"></span>
+      </div>
+
+      <div id="mensajePrestamos"></div>
+      <table id="tablaPrestamos">
+        <thead>
+          <tr><th>Usuario</th><th>Libro</th><th>Prestado el</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody id="cuerpoPrestamos"></tbody>
+      </table>
+      <div class="vacio oculto" id="vacioPrestamos">Todavía no hay préstamos registrados.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:5000";
+
+  
+  let token = null;
+  let usuarioActual = null;
+
+  // Utilidades
+  function mostrarMensaje(idContenedor, texto, tipo) {
+    const contenedor = document.getElementById(idContenedor);
+    contenedor.innerHTML = `<div class="mensaje ${tipo}">${texto}</div>`;
+    if (tipo === "ok") {
+      setTimeout(() => { contenedor.innerHTML = ""; }, 3000);
+    }
+  }
+
+  async function llamarApi(ruta, opciones = {}) {
+    const cabeceras = { "Content-Type": "application/json", ...(opciones.headers || {}) };
+    if (token) cabeceras["Authorization"] = `Bearer ${token}`;
+
+    const respuesta = await fetch(`${API_BASE}${ruta}`, { ...opciones, headers: cabeceras });
+    const datos = await respuesta.json().catch(() => ({}));
+
+    if (!respuesta.ok) {
+      throw new Error(datos.error || "Ocurrió un error inesperado");
+    }
+    return datos;
+  }
+
+  // Pestañaas de acceso 
+  function cambiarPestaña(cual) {
+    const esLogin = cual === "login";
+    document.getElementById("tabLogin").classList.toggle("activa", esLogin);
+    document.getElementById("tabRegistro").classList.toggle("activa", !esLogin);
+    document.getElementById("formLogin").classList.toggle("oculto", !esLogin);
+    document.getElementById("formRegistro").classList.toggle("oculto", esLogin);
+    document.getElementById("mensajeAcceso").innerHTML = "";
+  }
+
+  // Autenticación 
+  async function manejarLogin(evento) {
+    evento.preventDefault();
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    try {
+      const datos = await llamarApi("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password })
+      });
+      iniciarSesion(datos.token, email);
+    } catch (e) {
+      mostrarMensaje("mensajeAcceso", e.message, "error");
+    }
+    return false;
+  }
+
+  async function manejarRegistro(evento) {
+    evento.preventDefault();
+    const nombre = document.getElementById("regNombre").value;
+    const email = document.getElementById("regEmail").value;
+    const password = document.getElementById("regPassword").value;
+    try {
+      const datos = await llamarApi("/auth/registro", {
+        method: "POST",
+        body: JSON.stringify({ nombre, email, password })
+      });
+      iniciarSesion(datos.token, email);
+    } catch (e) {
+      mostrarMensaje("mensajeAcceso", e.message, "error");
+    }
+    return false;
+  }
+
+  function iniciarSesion(nuevoToken, email) {
+    token = nuevoToken;
+    usuarioActual = email;
+    document.getElementById("panelAcceso").classList.add("oculto");
+    document.getElementById("app").classList.remove("oculto");
+    document.getElementById("estadoSesion").innerHTML =
+      `${email} &nbsp; <button onclick="cerrarSesion()">Cerrar sesión</button>`;
+    cargarLibros();
+    cargarPrestamos();
+  }
+
+  function cerrarSesion() {
+    token = null;
+    usuarioActual = null;
+    document.getElementById("app").classList.add("oculto");
+    document.getElementById("panelAcceso").classList.remove("oculto");
+    document.getElementById("estadoSesion").innerHTML = "";
+    document.getElementById("loginPassword").value = "";
+    cambiarPestaña("login");
+  }
+
+  // Libros
+  async function cargarLibros() {
+    try {
+      const libros = await llamarApi("/libros");
+      const cuerpo = document.getElementById("cuerpoLibros");
+      const vacio = document.getElementById("vacioLibros");
+      document.getElementById("contadorLibros").textContent =
+        `${libros.length} ${libros.length === 1 ? "libro" : "libros"}`;
+
+      if (libros.length === 0) {
+        cuerpo.innerHTML = "";
+        vacio.classList.remove("oculto");
+        return;
+      }
+      vacio.classList.add("oculto");
+
+      cuerpo.innerHTML = libros.map(libro => `
+        <tr>
+          <td>${escapar(libro.titulo)}</td>
+          <td>${escapar(libro.autor)}</td>
+          <td>${escapar(libro.genero || "—")}</td>
+          <td>${libro.anio || "—"}</td>
+          <td>${libro.disponible
+              ? '<span class="etiqueta disponible">Disponible</span>'
+              : '<span class="etiqueta prestado">Prestado</span>'}</td>
+          <td>${libro.disponible
+              ? `<button class="accion-link" onclick="prestarLibro(${libro.id})">Prestar</button>`
+              : ""}</td>
+        </tr>
+      `).join("");
+    } catch (e) {
+      mostrarMensaje("mensajeLibros", e.message, "error");
+    }
+  }
+
+  async function agregarLibro(evento) {
+    evento.preventDefault();
+    const titulo = document.getElementById("libroTitulo").value;
+    const autor = document.getElementById("libroAutor").value;
+    const genero = document.getElementById("libroGenero").value;
+    const anio = document.getElementById("libroAnio").value;
+
+    try {
+      await llamarApi("/libros", {
+        method: "POST",
+        body: JSON.stringify({ titulo, autor, genero, anio: anio || null })
+      });
+      document.getElementById("libroTitulo").value = "";
+      document.getElementById("libroAutor").value = "";
+      document.getElementById("libroGenero").value = "";
+      document.getElementById("libroAnio").value = "";
+      mostrarMensaje("mensajeLibros", "Libro agregado correctamente.", "ok");
+      cargarLibros();
+    } catch (e) {
+      mostrarMensaje("mensajeLibros", e.message, "error");
+    }
+    return false;
+  }
+
+  // Préstamos
+  
+  async function prestarLibro(libroId) {
+    try {
+      const usuarios = await llamarApi("/usuarios");
+      const yo = usuarios.find(u => u.email === usuarioActual);
+      if (!yo) throw new Error("No se encontró tu usuario");
+
+      await llamarApi("/prestamos", {
+        method: "POST",
+        body: JSON.stringify({ usuario_id: yo.id, libro_id: libroId })
+      });
+      mostrarMensaje("mensajeLibros", "Préstamo registrado.", "ok");
+      cargarLibros();
+      cargarPrestamos();
+    } catch (e) {
+      mostrarMensaje("mensajeLibros", e.message, "error");
+    }
+  }
+
+  async function devolverPrestamo(prestamoId) {
+    try {
+      await llamarApi(`/prestamos/${prestamoId}/devolver`, { method: "PUT" });
+      mostrarMensaje("mensajePrestamos", "Libro devuelto.", "ok");
+      cargarLibros();
+      cargarPrestamos();
+    } catch (e) {
+      mostrarMensaje("mensajePrestamos", e.message, "error");
+    }
+  }
+
+  async function cargarPrestamos() {
+    try {
+      const prestamos = await llamarApi("/prestamos");
+      const cuerpo = document.getElementById("cuerpoPrestamos");
+      const vacio = document.getElementById("vacioPrestamos");
+      document.getElementById("contadorPrestamos").textContent =
+        `${prestamos.length} registrados`;
+
+      if (prestamos.length === 0) {
+        cuerpo.innerHTML = "";
+        vacio.classList.remove("oculto");
+        return;
+      }
+      vacio.classList.add("oculto");
+
+      cuerpo.innerHTML = prestamos.map(p => `
+        <tr>
+          <td>${escapar(p.usuario)}</td>
+          <td>${escapar(p.libro)}</td>
+          <td>${p.fecha_prestamo}</td>
+          <td>${p.estado === "activo"
+              ? '<span class="etiqueta activo">Activo</span>'
+              : '<span class="etiqueta devuelto">Devuelto</span>'}</td>
+          <td>${p.estado === "activo"
+              ? `<button class="accion-link" onclick="devolverPrestamo(${p.id})">Marcar devuelto</button>`
+              : ""}</td>
+        </tr>
+      `).join("");
+    } catch (e) {
+      mostrarMensaje("mensajePrestamos", e.message, "error");
+    }
+  }
+
+  function escapar(texto) {
+    const d = document.createElement("div");
+    d.textContent = texto ?? "";
+    return d.innerHTML;
+  }
+</script>
+
+</body>
+</html>

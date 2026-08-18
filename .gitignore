@@ -1,0 +1,18 @@
+# Base de datos local 
+biblioteca.db
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+
+# Entorno virtual
+venv/
+env/
+
+# Archivos de configuración del editor
+.vscode/
+.idea/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
